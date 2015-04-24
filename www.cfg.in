@@ -1,0 +1,51 @@
+load_module %CWD%/module/ngx_http_webshell_module.so;
+
+user root;
+worker_processes 1;
+daemon off;
+error_log /dev/null crit;
+pid /tmp/ngx_http_webshell_module.pid;
+
+events {
+	worker_connections 4096;
+	multi_accept off;
+}
+
+http {
+	ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+	ssl_prefer_server_ciphers on;
+
+	client_header_buffer_size 4k;
+	large_client_header_buffers 2 4k;
+	access_log off;
+
+	server {
+		listen 8000 default_server;
+
+		include /etc/nginx/mime.types;
+		default_type text/html;
+
+		location ~ ^/$ {
+			return 200 '<meta http-equiv="refresh" content="0;url=/static/term.html" />';
+		}
+
+		location /static {
+			alias %CWD%/static;
+			try_files $uri $uri/ =404;
+		}
+
+		location /download {
+			alias /;
+			autoindex on;
+		}
+
+		location /upload {
+			http_webshell;
+		}
+
+		location /shell {
+			http_webshell;
+		}
+	}
+}
+

@@ -1,0 +1,16 @@
+ngx_module_name=ngx_http_webshell_module
+
+if test -n "$ngx_module_link"; then
+	ngx_module_type=HTTP_AUX_FILTER
+	ngx_module_srcs="$ngx_addon_dir/$ngx_module_name.c"
+	ngx_module_deps="$ngx_addon_dir/$ngx_module_name.h"
+	ngx_module_libs="SHA1 -lutil"
+	. auto/module
+	ngx_addon_name=$ngx_module_name
+else
+	HTTP_AUX_FILTER_MODULES="$HTTP_AUX_FILTER_MODULES $ngx_module_name" 
+	NGX_ADDON_SRCS="$NGX_ADDON_SRCS $ngx_addon_dir/$ngx_module_name.c" 
+	NGX_ADDON_DEPS="$NGX_ADDON_DEPS $ngx_addon_dir/$ngx_module_name.h" 
+	CORE_LIBS="$CORE_LIBS"
+fi
+

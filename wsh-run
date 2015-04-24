@@ -1,0 +1,16 @@
+#!/bin/sh -e
+
+cd $(dirname $0)
+WORKDIR=$(pwd)
+
+[ ! -e ${WORKDIR}/module/ngx_http_webshell_module.so ] && echo "Wsh application isn't compiled yet!" && exit 1
+
+TMP_CONF=/tmp/www.cfg
+
+awk '{ gsub("%CWD%", "'$(pwd)'", $0); print $0 }' www.cfg.in > ${TMP_CONF}
+
+LISTEN=$(awk '{ if ($1 == "listen") { print $2 } }' ${TMP_CONF} | head -n 1)
+
+echo "Nignx started running in foreground listening on ${LISTEN} .."
+echo
+exec nginx -c ${TMP_CONF}

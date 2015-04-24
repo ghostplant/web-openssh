@@ -1,0 +1,243 @@
+<!doctype html>
+<title>term.js</title>
+<!--
+  term.js
+  Copyright (c) 2012-2013, Christopher Jeffrey (MIT License)
+  
+  Upgraded by CUI Wei <ghostplant@qq.com>, 2017
+-->
+<style type="text/css">
+  html {
+    overflow: hidden;
+    background: black;
+  }
+</style>
+
+<script src="term.js"></script>
+<body style="margin: 0 0; text-align: left;">
+  <div style="position: absolute; z-index: 2; right: 0%; margin-top: 10px; margin-right: 10px; opacity:0.4;">
+    <button style="margin-top: 5px; width: 140px" id="term_size">0x0</button><br/>
+    <button style="margin-top: 5px; width: 140px;" onclick="window.open('/download')">File Download</button><br/>
+    <button style="margin-top: 5px; width: 140px;" onclick="window.upload()" id="file_upload">File Upload</button><br/>
+    <button style="margin-top: 5px; width: 140px;" onclick="window.termPaste()">Extern Paste</button><br/>
+  </div>
+  <textarea id="clipdata" style="width:50%; z-index:3; resize: none; height:50%; background: white; padding: 5px 5px 5px 5px; opacity:1.0; border:8px solid #28004D; position:absolute; left:25%; top:25%; display: none"></textarea>
+  <div id="term_div"></div>
+  
+  <div style="display: none">
+    <div id="file_uploader"></div>
+    <audio id="beep_sound"><source src="beep.ogg" type="audio/ogg"/></audio>
+  </div>
+  
+  <script>
+  ;(function() {
+
+    function sendData(ch) {
+      if (window.ws != null) {
+        var mode = '0123456789ABCDEF';
+        var s = '';
+        for (var i = 0; i < ch.length; i++) {
+          var c = ch.charCodeAt(i);
+          if (c < 128) {
+            s += mode.charAt(c >> 4) + mode.charAt(c & 0xF);
+          } else if (c < 0x800) {
+            s += mode.charAt(0xC + (c >> 10)) +
+                 mode.charAt((c >> 6) & 0xF) +
+                 mode.charAt(0x8 + ((c >> 4) & 0x3)) +
+                 mode.charAt(c & 0xF);
+          } else if (c < 0x10000) {
+            s += 'E' +
+                 mode.charAt((c >> 12)) +
+                 mode.charAt(0x8 + ((c >> 10) & 0x3)) +
+                 mode.charAt((c >> 6) & 0xF ) +
+                 mode.charAt(0x8 + ((c >> 4) & 0x3)) +
+                 mode.charAt(c & 0xF);
+          } else if (c < 0x110000) {
+            s += 'F' +
+                 mode.charAt((c >> 18)) +
+                 mode.charAt(0x8 + ((c >> 16) & 0x3)) +
+                 mode.charAt((c >> 12) & 0xF ) +
+                 mode.charAt(0x8 + ((c >> 10) & 0x3)) +
+                 mode.charAt((c >> 6) & 0xF ) +
+                 mode.charAt(0x8 + ((c >> 4) & 0x3)) +
+                 mode.charAt(c & 0xF);
+          }
+        }
+        window.ws.send('d' + s);
+      }
+    }
+    
+    window.termPaste = function() {
+      document.getElementById('term_div').onclick = function() {
+        document.getElementById('clipdata').style.display = 'none';
+        if (window.term != null && window.ws != null)
+          sendData(document.getElementById('clipdata').value);
+        document.getElementById('clipdata').value = '';
+      };
+      
+      if (document.getElementById('clipdata').style.display == 'none') {
+        setTimeout("document.getElementById('clipdata').style.display = ''", 200);
+        setTimeout("document.getElementById('clipdata').focus()", 500);
+      } else
+        document.getElementById('term_div').onclick();
+    };
+    
+    window.upload = function() {
+      document.getElementById('file_uploader').innerHTML = '<input type="file" id="file_uploader_obj" />';
+      var uploader = document.getElementById('file_uploader_obj');
+      uploader.onchange = function() {
+        var fpath = prompt('Input the remote-side folder you want to upload this file to:', '~/');
+        if (fpath == null || fpath.length == 0)
+          return;
+        if (fpath[fpath.length - 1] != '/')
+          fpath += '/';
+        if (fpath[0] != '/' && fpath[0] != '~')
+          fpath = '~/' + fpath;
+        document.getElementById('file_upload').disabled = true;
+        var file = uploader.files[0];
+        fpath += file.name;
+        var ws_uploader = new WebSocket('ws' + window.location.protocol.substring(4) + '//' + window.location.host + '/upload/', 'binary');
+        var fsize = file.size, counts = Math.floor((fsize + 32767) / 32768), current = 0, l = 0, r = 0;
+        ws_uploader.onopen = function (evt) {
+          document.getElementById('file_upload').nameContent = document.getElementById('file_upload').innerHTML;
+          ws_uploader.send('o' + fpath);
+        };
+        ws_uploader.onclose = function (evt) {
+          alert('The file has been successfully uploaded to remote:\n\n' + fpath);
+          console.log('Uploading procedure finished.');
+          document.getElementById('file_upload').innerHTML = document.getElementById('file_upload').nameContent;
+          document.getElementById('file_upload').disabled = false;
+        };
+        ws_uploader.onmessage = function (evt) {
+          var progress = parseInt(Math.ceil(current * 100 / counts));
+          document.getElementById('file_upload').innerHTML = progress + ' %';
+          current = current + 1;
+          l = r;
+          r = Math.min(l + 32768, fsize);
+          if (l < r)
+            ws_uploader.send(file.slice(l, r));
+          else
+            ws_uploader.close();
+        };
+      };
+      uploader.click();
+    };
+    
+    window.onload = function() {
+      var term = new Terminal({
+        cols: 80,
+        rows: 24,
+        useStyle: true,
+        screenKeys: true,
+        cursorBlink: true
+      });
+      
+      window.term = term;
+
+      term.on('data', function(data) {
+        sendData(data);
+      });
+
+      term.on('title', function(title) {
+        document.title = title;
+      });
+      
+      var resizer = function() {
+        var x = Math.max(1, Math.floor(window.innerWidth / document.getElementById('globCursor').offsetWidth));
+        var y = Math.max(1, Math.floor(window.innerHeight / document.getElementById('globCursor').offsetHeight))
+        term.resize(x, y);
+        document.getElementById('term_size').innerHTML = x + 'x' + y;
+        window.ws.send('s' + term.rows + ',' + term.cols);
+      };
+      
+      window.addEventListener('resize', resizer);
+      
+      window.ws = new WebSocket('ws' + window.location.protocol.substring(4) + '//' + window.location.host + '/shell/', 'binary');
+      
+      window.ws.onopen = function() {
+        resizer();
+        if (window.pingIntv != null)
+          clearInterval(window.pingIntv);
+        window.pingIntv = setInterval(function() { if (window.ws != null) window.ws.send('p'); }, 30000);
+      };
+      window.ws.onclose = function() {
+        window.ws = null;
+        if (window.pingIntv != null) {
+          clearInterval(window.pingIntv);
+          window.pingIntv = null;
+        }
+        term.write('\r\n\x1b[33m[Terminal Session Closed..]\x1b[m\r\n');
+        // term.destroy();
+      };
+      
+      window.ws.onmessage = function(evt) {
+        var fileReader = new FileReader();
+        fileReader.onload = function() {
+          var uarr = new Uint8Array(this.result);
+          if (uarr.length > 1 && uarr[1] == 7) {
+            var audio = document.getElementById('beep_sound');
+            if (audio.play != undefined)
+              audio.play();
+          }
+
+          var utfResult = [];
+          for (var i = 0, ch, utfCount = 0; i < uarr.length; ++i) {
+            ch = uarr[i];
+            if (ch > 0x7F) {
+              if (utfCount > 0 && (ch & 0xC0) == 0x80) {
+                utfChar = (utfChar << 6) | (ch & 0x3F);
+                if (--utfCount <= 0) {
+                  if (utfChar > 0xFFFF || utfChar < 0) {
+                    ch = 0xFFFD;
+                  } else {
+                    ch = utfChar;
+                  }
+                } else {
+                  continue;
+                }
+              } else {
+                if ((ch & 0xE0) == 0xC0) {
+                  utfCount = 1;
+                  utfChar  = ch & 0x1F;
+                } else if ((ch & 0xF0) == 0xE0) {
+                  utfCount = 2;
+                  utfChar  = ch & 0x0F;
+                } else if ((ch & 0xF8) == 0xF0) {
+                  utfCount = 3;
+                  utfChar  = ch & 0x07;
+                } else if ((ch & 0xFC) == 0xF8) {
+                  utfCount = 4;
+                  utfChar  = ch & 0x03;
+                } else if ((ch & 0xFE) == 0xFC) {
+                  utfCount = 5;
+                  utfChar  = ch & 0x01;
+                } else {
+                  utfCount = 0;
+                }
+                continue;
+              }
+            } else {
+              utfCount = 0;
+            }
+            utfResult.push(ch);
+          }
+          
+          var data = String.fromCharCode.apply(null, utfResult);
+          term.write(data.substring(1));
+          
+          if (data[0] == 'y') {
+            window.ws.send('s' + term.rows + ',' + term.cols);
+            //this.connected = true;
+            //window.shellinabox.sendRequest();
+            return;
+          }
+        };
+        fileReader.readAsArrayBuffer(evt.data);
+      };
+
+      term.open(document.getElementById('term_div'));
+    };
+  }).call(this);
+  </script>
+</body>
+
