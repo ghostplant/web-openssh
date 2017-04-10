@@ -22,15 +22,28 @@ A kind of Secure Shell Server completely replacing OpenSSH Server, sharing conne
 
 --------------------------------------------------------
 
-### Run Embeded WSH Shell in Docker
+### Run Embeded WSH Shell in Docker from Repository
 
 ```sh
 docker run -it --rm -p 8000:8000 ghostplant/wsh-shell
 ```
-
 --------------------------------------------------------
 
-### Or, compile Source Codes on Ubuntu 16.04 LTS
+### Or Build Local Docker Image
+
+```sh
+apt install nginx-core
+apt build-dep nginx-core
+
+git clone https://github.com/ghostplant/wsh-shell
+cd wsh-shell/
+ALPINE=y ./wsh-compile
+docker build -t ghostplant/wsh-shell .
+docker run -it --rm -p 8000:8000 ghostplant/wsh-shell
+```
+--------------------------------------------------------
+
+### Or Compile Source Codes on Ubuntu 16.04 LTS
 
 ```sh
 apt install nginx-core
