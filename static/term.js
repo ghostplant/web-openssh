@@ -2854,14 +2854,14 @@ Terminal.prototype.keyPress = function(ev) {
 Terminal.prototype.send = function(data) {
   var self = this;
 
-  if (!this.queue) {
+  /*(if (!this.queue) {
     setTimeout(function() {
       self.handler(self.queue);
       self.queue = '';
     }, 1);
   }
 
-  this.queue += data;
+  this.queue += data;*/
 };
 
 Terminal.prototype.bell = function() {

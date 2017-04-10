@@ -145,9 +145,13 @@
       var resizer = function() {
         var x = Math.max(1, Math.floor(window.innerWidth / document.getElementById('globCursor').offsetWidth));
         var y = Math.max(1, Math.floor(window.innerHeight / document.getElementById('globCursor').offsetHeight))
-        term.resize(x, y);
-        document.getElementById('term_size').innerHTML = x + 'x' + y;
-        window.ws.send('s' + term.rows + ',' + term.cols);
+        if (window.tX != x || window.tY != y) {
+          window.tX = x;
+          window.tY = y;
+          term.resize(x, y);
+          document.getElementById('term_size').innerHTML = x + 'x' + y;
+          window.ws.send('s' + term.rows + ',' + term.cols);
+        }
       };
       
       window.addEventListener('resize', resizer);
@@ -226,9 +230,7 @@
           term.write(data.substring(1));
           
           if (data[0] == 'y') {
-            window.ws.send('s' + term.rows + ',' + term.cols);
-            //this.connected = true;
-            //window.shellinabox.sendRequest();
+            window.ws.send('s');
             return;
           }
         };

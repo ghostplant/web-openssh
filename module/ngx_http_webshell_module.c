@@ -203,14 +203,16 @@ ngx_int_t ngx_websocket_on_message(ngx_http_request_t *r, u_char *message, size_
 	} else if (*message == 's') {
 		if (ctx->conn.fd == 0)
 			return NGX_ERROR;
-		char *p = strchr((char*)message, ',');
-		if (!p)
-			return NGX_ERROR;
-		*p = 0;
 		if (!ctx->in.available) {
 			ctx->in.available = 1;
 			ngx_pty_recv(&ctx->in);
 		}
+		if (len == 1)
+			return NGX_OK;
+		char *p = strchr((char*)message, ',');
+		if (!p)
+			return NGX_ERROR;
+		*p = 0;
 		u_short layout[4] = {atoi((char*)message + 1), atoi(p + 1), 0, 0};
 		if (layout[0] != ctx->height || layout[1] != ctx->width) {
 			ctx->height = layout[0], ctx->width = layout[1];
