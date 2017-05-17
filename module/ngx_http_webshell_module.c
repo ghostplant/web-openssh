@@ -133,7 +133,7 @@ void ngx_websocket_on_open(ngx_http_request_t *r) {
 		setenv("PATH", "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin", 0);
 		setenv("HOME", home, 0);
 		setenv("TERM", "xterm", 0);
-		char *sh[] = {"/bin/sh", "-c", "cd ~; [ -e /etc/default/locale ] && . /etc/default/locale && export LANG; if which bash >/dev/null; then SHELL=$(which bash) exec bash; else SHELL=$(which sh) exec sh; fi", NULL};
+		char *sh[] = {"/bin/sh", "-c", "cd ~; umask 022; [ -e /etc/default/locale ] && . /etc/default/locale && export LANG; if which bash >/dev/null; then SHELL=$(which bash) exec bash; else SHELL=$(which sh) exec sh; fi", NULL};
 		execvp(*sh, sh);
 		exit(1);
 	}

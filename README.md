@@ -1,8 +1,8 @@
-# WSH Shell (License: MIT)
+# Web Shell (License: MIT)
 
 A kind of Secure Shell Server completely replacing OpenSSH Server, sharing connection message over websocket protocol.
 
-![image](wsh-shell.png "WSH Shell")
+![image](webshell.png "Web Shell")
 
 --------------------------------------------------------
 
@@ -22,49 +22,35 @@ A kind of Secure Shell Server completely replacing OpenSSH Server, sharing conne
 
 --------------------------------------------------------
 
-### Run Embeded WSH Shell in Docker from Repository
+### Run Embeded Web Shell in Docker from Repository
 
 ```sh
-docker run -it --rm -p 8000:8000 ghostplant/wsh-shell
+docker run -it --rm --net=host -e LISTEN="8080" ghostplant/webshell
+docker run -it --rm --net=host -e LISTEN="8443 ssl" ghostplant/webshell
+docker run -it --rm --net=host -e LISTEN="8443 ssl" -e ACCOUNT="admin:badmin" ghostplant/webshell
 ```
 --------------------------------------------------------
 
-### Or Build Local Docker Image
+### Compile Source Codes on Ubuntu 16.04 LTS
 
 ```sh
 apt install nginx-core
 apt build-dep nginx-core
 
-git clone https://github.com/ghostplant/wsh-shell
-cd wsh-shell/
-ALPINE=y ./wsh-compile
-docker build -t ghostplant/wsh-shell .
-docker run -it --rm -p 8000:8000 ghostplant/wsh-shell
-```
---------------------------------------------------------
-
-### Or Compile Source Codes on Ubuntu 16.04 LTS
-
-```sh
-apt install nginx-core
-apt build-dep nginx-core
-
-git clone https://github.com/ghostplant/wsh-shell
-cd wsh-shell/
+git clone https://github.com/ghostplant/webshell
+cd webshell/
 ./wsh-compile
-./wsh-run
+LISTEN=8080 ./wsh-run
 ```
 --------------------------------------------------------
 
 ### Next, open your browser to get access to the terminal
 
 ```sh
-firefox "http://localhost:8000/"
+firefox "http://localhost:8080/"
 ```
 
 --------------------------------------------------------
 
 If you want to enable http over SSL, change listen ports, or add WWW authorization,
 you can add your custom settings in nginx config file - www.cfg.in. 
-
-Any issues are welcome.
