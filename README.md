@@ -41,7 +41,7 @@ sudo apt build-dep nginx-core
 git clone https://github.com/ghostplant/webshell
 cd webshell/
 ./wsh-compile
-LISTEN=8080 ./wsh-run
+./wsh-run
 ```
 --------------------------------------------------------
 
