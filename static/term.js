@@ -1350,8 +1350,12 @@ Terminal.prototype.refresh = function(start, end) {
           if (ch <= ' ') {
             out += '&nbsp;';
           } else {
-            if (isWide(ch)) i++;
-            out += ch;
+            if (isWide(ch)) {
+              i++;
+              out += '<span style="display:inline-block;margin-top:-2px;width:' + (globalWidth * 2) + 'px; height: ' + (globalHeight - 1) + 'px">' + ch + '</span>';
+            } else {
+              out += ch;
+            }
           }
           break;
       }
@@ -5846,6 +5850,7 @@ function indexOf(obj, el) {
 }
 
 function isWide(ch) {
+  if (ch >= '\u2500' && ch < '\u2600') return false;
   if (ch >= '\u0080') return true;
   if (ch <= '\uff00') return false;
   return (ch >= '\uff01' && ch <= '\uffbe')
