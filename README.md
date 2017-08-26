@@ -9,8 +9,8 @@ A kind of Secure Shell Server completely replacing OpenSSH Server, sharing conne
 *Features of webssh-proxy*:
 
 - UTF-8 Support, Color Terminal, Visual Bell/Beep Sound, ..
-- Local File Uploading to Remote: supporting huge file upload
-- Remote File Downloading to Local: support huge file download
+- Local File Uploading to Remote: support HUGE file upload
+- Remote File Downloading to Local: support HUGE file download
 - No dependency with OpenSSH Server
 - Fully AsyncIO based
 
