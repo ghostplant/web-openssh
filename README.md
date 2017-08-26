@@ -34,8 +34,8 @@ docker run -it --rm --net=host -e LISTEN="8443 ssl" -e ACCOUNT="admin:badmin" gh
 ### Compile Source Codes on Ubuntu 16.04 LTS
 
 ```sh
-apt install nginx-core
-apt build-dep nginx-core
+sudo apt install nginx-core
+sudo apt build-dep nginx-core
 
 git clone https://github.com/ghostplant/webshell
 cd webshell/
