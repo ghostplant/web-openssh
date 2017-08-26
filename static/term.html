@@ -145,8 +145,8 @@
       });
       
       var resizer = function() {
-        var x = Math.max(1, Math.floor(window.innerWidth / document.getElementById('globCursor').offsetWidth));
-        var y = Math.max(1, Math.floor(window.innerHeight / document.getElementById('globCursor').offsetHeight))
+        var x = Math.max(1, Math.floor(window.innerWidth / globalWidth));
+        var y = Math.max(1, Math.floor(window.innerHeight / globalHeight));
         if (window.tX != x || window.tY != y) {
           window.tX = x;
           window.tY = y;
@@ -161,6 +161,8 @@
       window.ws = new WebSocket('ws' + window.location.protocol.substring(4) + '//' + window.location.host + '/shell/', 'binary');
       
       window.ws.onopen = function() {
+        globalWidth = document.getElementById('globCursor').offsetWidth;
+        globalHeight = document.getElementById('globCursor').offsetHeight;
         resizer();
         if (window.pingIntv != null)
           clearInterval(window.pingIntv);
