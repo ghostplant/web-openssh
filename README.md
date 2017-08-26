@@ -1,6 +1,7 @@
 # Web Shell (License: MIT)
 
-A kind of Secure Shell Server completely replacing OpenSSH Server, sharing connection message over websocket protocol.
+Brief: A kind of Secure Shell Server completely replacing OpenSSH Server, sharing connection message over websocket protocol.
+Supporting: HTTPS, Basic AUTH, Docker Integration, WebSocket FileUpload, FileDownload, etc.
 
 ![image](webshell.png "Web Shell")
 
@@ -53,4 +54,4 @@ firefox "http://localhost:8080/"
 --------------------------------------------------------
 
 If you want to enable http over SSL, change listen ports, or add WWW authorization,
-you can add your custom settings in nginx config file - www.cfg.in. 
+you can add your custom settings in nginx config file - [www.cfg.in](www.cfg.in). 
