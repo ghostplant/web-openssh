@@ -1,6 +1,8 @@
 FROM alpine:3.4
 MAINTAINER CUI Wei <ghostplant@qq.com>
 
+ENV LANG en_US.UTF-8
+
 RUN apk --update add nginx && rm -rf /var/cache/apk
 ADD static /opt/static
 ADD wsh-run /opt/wsh-run
