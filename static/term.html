@@ -84,6 +84,8 @@
         document.getElementById('term_div').onclick();
     };
     
+    var address = prompt("Input the location of OpenSSH:", window.location.host)
+    
     window.upload = function() {
       document.getElementById('file_uploader').innerHTML = '<input type="file" id="file_uploader_obj" />';
       var uploader = document.getElementById('file_uploader_obj');
@@ -98,7 +100,7 @@
         document.getElementById('file_upload').disabled = true;
         var file = uploader.files[0];
         fpath += file.name;
-        var ws_uploader = new WebSocket('ws' + window.location.protocol.substring(4) + '//' + window.location.host + '/upload/', 'binary');
+        var ws_uploader = new WebSocket('ws' + window.location.protocol.substring(4) + '//' + address + '/upload/', 'binary');
         var fsize = file.size, counts = Math.floor((fsize + 32767) / 32768), current = 0, l = 0, r = 0;
         ws_uploader.onopen = function (evt) {
           document.getElementById('file_upload').nameContent = document.getElementById('file_upload').innerHTML;
@@ -159,7 +161,7 @@
       
       window.addEventListener('resize', resizer);
       
-      window.ws = new WebSocket('ws' + window.location.protocol.substring(4) + '//' + window.location.host + '/shell/', 'binary');
+      window.ws = new WebSocket('ws' + window.location.protocol.substring(4) + '//' + address + '/shell/', 'binary');
       
       window.ws.onopen = function() {
         globalWidth = document.getElementById('globCursor').offsetWidth;
