@@ -718,6 +718,7 @@ Terminal.prototype.open = function(parent) {
   this.element = this.document.createElement('div');
   this.element.className = 'terminal';
   this.element.style.outline = 'none';
+  this.element.style.whiteSpace = 'nowrap';
   this.element.setAttribute('tabindex', 0);
   this.element.setAttribute('spellcheck', 'false');
   this.element.style.backgroundColor = this.colors[256];
@@ -1366,7 +1367,6 @@ Terminal.prototype.refresh = function(start, end) {
     if (attr !== this.defAttr) {
       out += '</span>';
     }
-
     this.children[y].innerHTML = out;
   }
 
