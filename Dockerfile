@@ -3,7 +3,7 @@ MAINTAINER CUI Wei <ghostplant@qq.com>
 
 ENV LANG en_US.UTF-8
 
-RUN apk --update add nginx && rm -rf /var/cache/apk
+RUN apk --update add nginx tmux openssh-client screen && rm -rf /var/cache/apk
 ADD static /opt/static
 ADD wsh-run /opt/wsh-run
 ADD www.cfg.in /opt/www.cfg.in
