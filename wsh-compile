@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/sh -xe
 
 cd $(dirname $0)
 WORKDIR=$(pwd)
@@ -8,7 +8,7 @@ cd .build
 
 if ! cd nginx-*; then
 	apt source nginx
-	apt build-dep nginx || true
+	sudo apt build-dep nginx
 	cd nginx-*
 fi
 
