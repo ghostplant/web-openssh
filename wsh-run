@@ -7,7 +7,33 @@ WORKDIR=$(pwd)
 
 TMP_CONF=/tmp/www.cfg
 
-awk '{ gsub("%CWD%", "'$(pwd)'", $0); print $0 }' www.cfg.in > ${TMP_CONF}
+cd $(dirname "${TMP_CONF}")
+
+awk '{ gsub("%CWD%", "'"${WORKDIR}"'", $0); print $0 }' ${WORKDIR}/www.cfg.in | \
+  awk '{ gsub("%PORT%", "'"${LISTEN:-8080 ssl}"'", $0); print $0 }' > ${TMP_CONF}
+
+LISTEN=$(awk '{ if ($1 == "listen") { print $2 } }' ${TMP_CONF} | head -n 1)
+USE_SSL=$(awk '{ if ($1 == "listen" && ($3 == "ssl" || $3 ~ "^ssl;.*$") ) { print "ssl" } }' ${TMP_CONF} | head -n 1)
+
+if [ "$USE_SSL" != "" ] && grep "\%SSL_CONF\%" ${TMP_CONF} >/dev/null; then
+	if [ ! -e ./ssl/ca.pem ]; then
+		mkdir -p ./ssl
+		openssl req -x509 -nodes -days 3650 -subj "/CN=$(hostname)/" -newkey rsa:4096 -keyout ./ssl/ca.pem -out ./ssl/ca.pem
+	fi
+	if [ "$ACCOUNT" != "" ]; then
+		# ACCOUNT=${ACCOUNT:-admin:badmin}
+		USER=$(echo "${ACCOUNT}" | awk -F\: '{ print $1 }')
+		PASS=$(echo "${ACCOUNT}" | awk -F\: '{ for(i=2; i<NF; ++i) { printf $i ":" } printf $NF }')
+		echo "Generating new account .."
+		echo "${USER}":$(openssl passwd -crypt "${PASS}") > ./ssl/auth.basic
+	fi
+	if [ -e ./ssl/auth.basic ]; then
+		SSL_AUTH_FLAG=" auth_basic realm; auth_basic_user_file .\/ssl\/auth.basic;";
+	fi
+	sed -i "s/%SSL_CONF%/ssl_certificate .\/ssl\/ca.pem; ssl_certificate_key .\/ssl\/ca.pem;${SSL_AUTH_FLAG}/g" ${TMP_CONF}
+else
+	sed -i "s/%SSL_CONF%//g" ${TMP_CONF}
+fi
 
 LISTEN=$(awk '{ if ($1 == "listen") { print $2 } }' ${TMP_CONF} | head -n 1)
 
