@@ -17,18 +17,18 @@
 <body style="margin: 0 0; text-align: left;">
   <div style="position: absolute; z-index: 2; right: 0%; margin-top: 10px; margin-right: 10px; opacity:0.4;">
     <button style="margin-top: 5px; width: 140px" id="term_size">0x0</button><br/>
-    <button style="margin-top: 5px; width: 140px;" onclick="window.open('/download')">File Download</button><br/>
+    <button style="margin-top: 5px; width: 140px;" onclick="window.open(window.address + '/download')">File Download</button><br/>
     <button style="margin-top: 5px; width: 140px;" onclick="window.upload()" id="file_upload">File Upload</button><br/>
     <button style="margin-top: 5px; width: 140px;" onclick="window.termPaste()">Extern Paste</button><br/>
   </div>
   <textarea id="clipdata" style="width:50%; z-index:3; resize: none; height:50%; background: white; padding: 5px 5px 5px 5px; opacity:1.0; border:8px solid #28004D; position:absolute; left:25%; top:25%; display: none"></textarea>
   <div id="term_div"></div>
-  
+
   <div style="display: none">
     <div id="file_uploader"></div>
     <audio id="beep_sound"><source src="beep.ogg" type="audio/ogg"/></audio>
   </div>
-  
+
   <script>
   ;(function() {
 
@@ -83,8 +83,17 @@
       } else
         document.getElementById('term_div').onclick();
     };
-    
-    var address = prompt("Input the location of OpenSSH:", window.location.host)
+
+    var address = prompt("Input the location of OpenSSH:", window.location.host);
+
+    var proto = null;
+    if (window.location.protocol == 'http:') {
+      proto = 'ws://';
+      window.address = 'http://' + address;
+    } else {
+      proto = 'wss://';
+      window.address = 'https://' + address;
+    }
     
     window.upload = function() {
       document.getElementById('file_uploader').innerHTML = '<input type="file" id="file_uploader_obj" />';
@@ -100,7 +109,7 @@
         document.getElementById('file_upload').disabled = true;
         var file = uploader.files[0];
         fpath += file.name;
-        var ws_uploader = new WebSocket('ws' + window.location.protocol.substring(4) + '//' + address + '/upload/', 'binary');
+        var ws_uploader = new WebSocket(proto + address + '/upload/', 'binary');
         var fsize = file.size, counts = Math.floor((fsize + 32767) / 32768), current = 0, l = 0, r = 0;
         ws_uploader.onopen = function (evt) {
           document.getElementById('file_upload').nameContent = document.getElementById('file_upload').innerHTML;
@@ -127,10 +136,17 @@
       uploader.click();
     };
     
+    function getWindowSize() {
+        var x = Math.max(1, Math.floor(window.innerWidth / 10));
+        var y = Math.max(1, Math.floor(window.innerHeight / 18));
+        return {"x": x, "y": y};
+    }
+
     window.onload = function() {
+      var dim = getWindowSize();
       var term = new Terminal({
-        cols: 80,
-        rows: 24,
+        cols: dim.x,
+        rows: dim.y,
         useStyle: true,
         screenKeys: true,
         cursorBlink: true
@@ -147,37 +163,39 @@
       });
       
       var resizer = function() {
-        var x = Math.max(1, Math.floor(window.innerWidth / (globalWidth + 1)));
-        var y = Math.max(1, Math.floor(window.innerHeight / (globalHeight)) - 1);
-        console.log(x, window.innerWidth, globalWidth);
-        if (window.tX != x || window.tY != y) {
-          window.tX = x;
-          window.tY = y;
-          term.resize(x, y);
-          document.getElementById('term_size').innerHTML = x + 'x' + y;
+        // var globalWidth = document.getElementById('globCursor').offsetWidth;
+        // var globalHeight = document.getElementById('globCursor').offsetHeight;
+        // var x = Math.max(1, Math.floor(window.innerWidth / (globalWidth + 1)));
+        // var y = Math.max(1, Math.floor(window.innerHeight / (globalHeight)) - 1);
+        var dim = getWindowSize();
+
+        if (window.tX != dim.x || window.tY != dim.y) {
+          window.tX = dim.x;
+          window.tY = dim.y;
+          term.resize(dim.x, dim.y);
+          document.getElementById('term_size').innerHTML = dim.x + 'x' + dim.y;
           window.ws.send('s' + term.rows + ',' + term.cols);
         }
       };
-      
+
       window.addEventListener('resize', resizer);
-      
-      window.ws = new WebSocket('ws' + window.location.protocol.substring(4) + '//' + address + '/shell/', 'binary');
-      
+
+      window.ws = new WebSocket(proto + address + '/shell/', 'binary');
+
       window.ws.onopen = function() {
-        globalWidth = document.getElementById('globCursor').offsetWidth;
-        globalHeight = document.getElementById('globCursor').offsetHeight;
         resizer();
         if (window.pingIntv != null)
           clearInterval(window.pingIntv);
         window.pingIntv = setInterval(function() { if (window.ws != null) window.ws.send('p'); }, 30000);
       };
+
       window.ws.onclose = function() {
         window.ws = null;
         if (window.pingIntv != null) {
           clearInterval(window.pingIntv);
           window.pingIntv = null;
         }
-        term.write('\r\n\x1b[33m[Terminal Session Closed..]\x1b[m\r\n');
+        term.write('\r\n\x1b[33m[Terminal Session Closed ..]\x1b[m\r\n');
         // term.destroy();
       };
       

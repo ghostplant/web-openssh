@@ -724,7 +724,7 @@ Terminal.prototype.open = function(parent) {
   this.element.style.backgroundColor = this.colors[256];
   this.element.style.color = this.colors[257];
   this.element.style.fontFamily = '"Courier New","DejaVu Sans Mono","Everson Mono",FreeMono,"Andale Mono",Consolas,monospace';
-  
+  this.element.style.fontSize = '16px';
 
   // Create the lines for our terminal.
   this.children = [];
@@ -1337,25 +1337,30 @@ Terminal.prototype.refresh = function(start, end) {
         }
       }
 
+      function wrapBlock(ch, width) {
+        width = width || '10px';
+        return '<span style="display:inline-block; width: ' + width + '">' + ch + '</span>';
+      }
+
       switch (ch) {
         case '&':
-          out += '&amp;';
+          out += wrapBlock('&amp;');
           break;
         case '<':
-          out += '&lt;';
+          out += wrapBlock('&lt;');
           break;
         case '>':
-          out += '&gt;';
+          out += wrapBlock('&gt;');
           break;
         default:
           if (ch <= ' ') {
-            out += '&nbsp;';
+            out += wrapBlock('&nbsp;');
           } else {
             if (isWide(ch)) {
               i++;
-              out += '<span style="display:inline-block;margin-top:-2px;width:' + (globalWidth * 2) + 'px; height: ' + (globalHeight - 1) + 'px">' + ch + '</span>';
+              out += wrapBlock(ch, '20px');
             } else {
-              out += ch;
+              out += wrapBlock(ch);
             }
           }
           break;
@@ -1368,6 +1373,7 @@ Terminal.prototype.refresh = function(start, end) {
       out += '</span>';
     }
     this.children[y].innerHTML = out;
+    this.children[y].style.height = '18px';
   }
 
   if (parent) parent.appendChild(this.element);
