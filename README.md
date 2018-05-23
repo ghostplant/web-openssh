@@ -26,6 +26,7 @@
 ### Run Embeded Web Shell in Docker from Repository
 
 ```sh
+docker pull ghostplant/webshell
 docker run -it --rm --net=host -e LISTEN="8080" ghostplant/webshell
 docker run -it --rm --net=host -e LISTEN="8443 ssl" ghostplant/webshell
 docker run -it --rm --net=host -e LISTEN="8443 ssl" -e ACCOUNT="admin:badmin" ghostplant/webshell
@@ -44,7 +45,7 @@ cd webshell/
 ./wsh-run
 ```
 
-### Compile Source Codes on Ubuntu 16.04 LTS
+### Make Alpine-Embedded WebShell on Ubuntu 16.04 LTS
 
 ```sh
 sudo apt install nginx-core
