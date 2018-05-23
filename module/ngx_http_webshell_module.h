@@ -44,7 +44,7 @@
 #define HYBI_GUID						"258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 #define HYBI10_ACCEPTHDRLEN				29
 #define WEBSOCKET_RESPONSE_CLOSE		"\x03\xe8 Closed"
-#define WEBSOCKET_FRAME_SIZE			65535
+#define WEBSOCKET_FRAME_SIZE			((1 << 17) - 1024)
 
 #define ngx_websocket_do_send(r, message, len)	(ngx_websocket_do_raw_send((r), (u_char*)(message), (len), WEBSOCKET_OPCODE_BINARY))
 #define ngx_get_session(r)  (((http_webshell_ctx_t*)ngx_http_get_module_ctx(r, ngx_http_webshell_module))->ptr)
@@ -126,7 +126,7 @@ static void ngx_http_read_handler(ngx_http_request_t *r) {
 			u_char opcode = ctx->inbuf[0] & 0x0F, next;
 			size_t hl = 2, pl = ctx->inbuf[1] & 0x7F;
 			if (pl == 126)
-				pl = (ctx->inbuf[2] << 8) + ctx->inbuf[3], hl += 2;
+				pl = ((size_t)(ctx->inbuf[2]) << 8) + ctx->inbuf[3], hl += 2;
 			else if (pl > 126)
 				goto err;
 			u_char *mask = ctx->inbuf + hl;

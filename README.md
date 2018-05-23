@@ -43,6 +43,21 @@ cd webshell/
 ./wsh-compile
 ./wsh-run
 ```
+
+### Compile Source Codes on Ubuntu 16.04 LTS
+
+```sh
+sudo apt install nginx-core
+sudo apt build-dep nginx-core
+
+git clone https://github.com/ghostplant/webshell
+cd webshell/
+ALPINE=y ./wsh-compile
+docker build -t ghostplant/webshell .
+
+docker run -it --rm --net=host -e LISTEN="8080" ghostplant/webshell
+```
+
 --------------------------------------------------------
 
 ### Next, open your browser to get access to the terminal

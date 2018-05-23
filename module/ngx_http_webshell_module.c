@@ -20,7 +20,7 @@ typedef struct {
 	ngx_event_t in, out;
 	pid_t pid;
 	u_short width, height;
-	u_char inbuf[1024];
+	u_char inbuf[1 << 18];
 	
 	FILE *upload;
 } shell_ctx_t;

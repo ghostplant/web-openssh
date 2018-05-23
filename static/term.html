@@ -114,7 +114,10 @@
         var file = uploader.files[0];
         fpath += file.name;
         var ws_uploader = new WebSocket(proto + address + '/upload/', 'binary');
-        var fsize = file.size, counts = Math.floor((fsize + 32767) / 32768), current = 0, l = 0, r = 0;
+
+        var batch = 65535;
+        var fsize = file.size;
+        var counts = (fsize + batch - 1) / batch, current = 0, l = 0, r = 0;
         ws_uploader.onopen = function (evt) {
           document.getElementById('file_upload').nameContent = document.getElementById('file_upload').innerHTML;
           ws_uploader.send('o' + fpath);
@@ -126,11 +129,11 @@
           document.getElementById('file_upload').disabled = false;
         };
         ws_uploader.onmessage = function (evt) {
-          var progress = parseInt(Math.ceil(current * 100 / counts));
-          document.getElementById('file_upload').innerHTML = progress + ' %';
           current = current + 1;
+          var progress = parseInt((current * 100 / counts));
+          document.getElementById('file_upload').innerHTML = progress + ' %';
           l = r;
-          r = Math.min(l + 32768, fsize);
+          r = Math.min(l + batch, fsize);
           if (l < r)
             ws_uploader.send(file.slice(l, r));
           else
