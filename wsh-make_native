@@ -1,0 +1,28 @@
+#!/bin/sh -e
+
+cd $(dirname $0)
+WORKDIR=$(pwd)
+
+mkdir -p .build/
+cd .build
+
+if ! cd nginx-*; then
+	curl -L http://nginx.org/download/nginx-1.10.3.tar.gz > _nginx-1.10.3.tar.gz
+	tar xzvf _nginx-1.10.3.tar.gz && cd nginx-*
+fi
+
+
+rm -rf /tmp/http_webshell "${WORKDIR}/bin"
+
+./configure --prefix=/tmp/http_webshell --add-module=../../module \
+	--with-ipv6 --with-file-aio --with-http_ssl_module --with-http_auth_request_module \
+	--with-cc-opt="-Wno-error"
+
+make && make install
+mv /tmp/http_webshell "${WORKDIR}"/bin
+
+echo "============================================================="
+echo "  Build Output: ${WORKDIR}/bin"
+echo
+echo "  [RUN] ${WORKDIR}/wsh-run"
+echo "============================================================="

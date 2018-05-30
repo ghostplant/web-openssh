@@ -105,7 +105,7 @@ static void ngx_websocket_do_close(ngx_http_request_t *r) {
 	
 	if (r->connection->write->timer_set)
 		ngx_del_timer(r->connection->write);
-    ngx_http_finalize_request(r, NGX_HTTP_CLOSE);
+	ngx_http_finalize_request(r, NGX_HTTP_CLOSE);
 }
 
 static void ngx_http_read_handler(ngx_http_request_t *r) {
@@ -124,7 +124,7 @@ static void ngx_http_read_handler(ngx_http_request_t *r) {
 		ctx->insz += n;
 		while (ctx->insz >= 2) {
 			u_char opcode = ctx->inbuf[0] & 0x0F, next;
-			size_t hl = 2, pl = ctx->inbuf[1] & 0x7F;
+			size_t i, hl = 2, pl = ctx->inbuf[1] & 0x7F;
 			if (pl == 126)
 				pl = ((size_t)(ctx->inbuf[2]) << 8) + ctx->inbuf[3], hl += 2;
 			else if (pl > 126)
@@ -141,7 +141,7 @@ static void ngx_http_read_handler(ngx_http_request_t *r) {
 			switch (opcode) {
 				case WEBSOCKET_OPCODE_TEXT:
 				case WEBSOCKET_OPCODE_BINARY:
-					for (size_t i = 0; i < pl; ++i)
+					for (i = 0; i < pl; ++i)
 						payload[i] ^= mask[i & 3];
 					next = payload[pl], payload[pl] = 0;
 					if (ngx_websocket_on_message(r, payload, pl) == NGX_ERROR)
@@ -206,7 +206,8 @@ static ngx_int_t ngx_http_webshell_handler(ngx_http_request_t *r) {
 	
 	ngx_list_part_t *part = &r->headers_in.headers.part;
 	ngx_table_elt_t *h = (ngx_table_elt_t*)part->elts;
-	for (ngx_uint_t i = 0; ; i++) {
+	ngx_uint_t i;
+	for (i = 0; ; i++) {
 		if (i >= part->nelts) {
 			if (part->next == NULL)
 				break;

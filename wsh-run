@@ -3,7 +3,7 @@
 cd $(dirname $0)
 WORKDIR=$(pwd)
 
-[ ! -e ${WORKDIR}/module/ngx_http_webshell_module.so ] && echo "Wsh application isn't compiled yet!" && exit 1
+[ ! -e ${WORKDIR}/bin ] && echo "Wsh application isn't compiled yet!" && exit 1
 
 TMP_CONF=/tmp/www.cfg
 
@@ -39,4 +39,6 @@ LISTEN=$(awk '{ if ($1 == "listen") { print $2 } }' ${TMP_CONF} | head -n 1)
 
 echo "Nignx started running in foreground listening on ${LISTEN} .."
 echo
-exec nginx -c ${TMP_CONF}
+
+rm -rf /tmp/http_webshell && ln -sf ${WORKDIR}/bin /tmp/http_webshell
+exec /tmp/http_webshell/sbin/nginx -c ${TMP_CONF}

@@ -87,8 +87,9 @@
     if (!localStorage.getItem('_address'))
       localStorage.setItem('_address', window.location.host);
     var address = prompt("Input the source of WebShell service:", localStorage.getItem('_address'));
-    if (address)
-      localStorage.setItem('_address', address);
+    if (!address)
+      address = window.location.host;
+    localStorage.setItem('_address', address);
 
     var proto = null;
     if (window.location.protocol == 'http:') {
@@ -131,6 +132,8 @@
         ws_uploader.onmessage = function (evt) {
           current = current + 1;
           var progress = parseInt((current * 100 / counts));
+          if (progress > 100)
+            progress = 100;
           document.getElementById('file_upload').innerHTML = progress + ' %';
           l = r;
           r = Math.min(l + batch, fsize);

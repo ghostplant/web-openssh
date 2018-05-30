@@ -33,30 +33,41 @@ docker run -it --rm --net=host -e LISTEN="8443 ssl" -e ACCOUNT="admin:badmin" gh
 ```
 --------------------------------------------------------
 
-### Compile Source Codes on Ubuntu 16.04 LTS
+### Compile Source Code on Ubuntu native
 
 ```sh
-sudo apt install nginx-core
 sudo apt build-dep nginx-core
 
 git clone https://github.com/ghostplant/webshell
 cd webshell/
-./wsh-compile
+./wsh-make_native
 ./wsh-run
 ```
 
-### Make Alpine-Embedded WebShell on Ubuntu 16.04 LTS
+### Compile Source Code on CentOS-7 native
 
 ```sh
-sudo apt install nginx-core
-sudo apt build-dep nginx-core
+sudo yum install epel-release
+sudo yum install gcc nginx pcre-devel openssl openssl-devel
 
 git clone https://github.com/ghostplant/webshell
 cd webshell/
-ALPINE=y ./wsh-compile
-docker build -t ghostplant/webshell .
+./wsh-make_native
+./wsh-run
+```
 
-docker run -it --rm --net=host -e LISTEN="8080" ghostplant/webshell
+### Compile Source Code as alpine-embedded Docker Image
+
+```sh
+sudo apt build-dep nginx-core  # for Ubuntu only
+
+sudo yum install epel-release # for Centos only
+sudo yum install gcc nginx pcre-devel openssl openssl-devel
+
+git clone https://github.com/ghostplant/webshell
+cd webshell/
+./wsh-make_alpine
+docker run -it --rm --net=host -e LISTEN="8080 ssl" ghostplant/webshell
 ```
 
 --------------------------------------------------------
@@ -64,7 +75,7 @@ docker run -it --rm --net=host -e LISTEN="8080" ghostplant/webshell
 ### Next, open your browser to get access to the terminal
 
 ```sh
-firefox "http://localhost:8080/"
+x-www-browser "http://localhost:8080/"
 ```
 
 --------------------------------------------------------

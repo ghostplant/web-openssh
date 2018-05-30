@@ -1,5 +1,3 @@
-load_module %CWD%/module/ngx_http_webshell_module.so;
-
 user root;
 worker_processes 1;
 daemon off;

@@ -31,7 +31,7 @@ typedef struct pid_entry_s {
 	struct pid_entry_s *next;
 } pid_entry_t;
 
-pid_entry_t pids = { };
+static pid_entry_t pids;
 
 void ngx_pty_recv(ngx_event_t *ev) {
 	ngx_http_request_t *r = ev->data;
@@ -56,8 +56,9 @@ void ngx_pty_recv(ngx_event_t *ev) {
 void ngx_signal_handler(ngx_event_t *ev) {
 	int status;
 	volatile pid_t pid;
+	pid_entry_t *p, *q;
 	while ((pid = waitpid(-1, &status, WNOHANG)) > 0) {
-		for (pid_entry_t *p = &pids, *q; p->next != NULL; p = p->next)
+		for (p = &pids; p->next != NULL; p = p->next)
 			if (p->next->pid == pid) {
 				q = p->next;
 				ngx_websocket_do_close(q->r);
@@ -83,7 +84,8 @@ const char *get_home() {
 			return NULL;
 		}
 		home[sizeof(home) - 1] = 0;
-		for (size_t i = 0; i < sizeof(home); ++i)
+		size_t i;
+		for (i = 0; i < sizeof(home); ++i)
 			if (home[i] == '\n') {
 				home[i] = 0;
 				break;
@@ -134,7 +136,7 @@ void ngx_websocket_on_open(ngx_http_request_t *r) {
 		setenv("HOME", home, 0);
 		setenv("TERM", "xterm", 0);
 		setenv("LANG", "en_US.UTF-8", 0);
-		char *sh[] = {"/bin/sh", "-c", "cd ~; umask 022; [ -e /etc/default/locale ] && . /etc/default/locale && export LANG; if which bash >/dev/null; then SHELL=$(which bash) exec bash; else SHELL=$(which sh) exec sh; fi", NULL};
+		char *sh[] = {"/bin/sh", "-c", "cd ~; umask 022; [ -e /etc/default/locale ] && . /etc/default/locale && export LANG; [ -e /bin/bash ] && exec bash; exec /bin/sh;", NULL};
 		execvp(*sh, sh);
 		exit(1);
 	}
@@ -186,9 +188,9 @@ ngx_int_t ngx_websocket_on_message(ngx_http_request_t *r, u_char *message, size_
 	} else if (*message == 'd') {
 		if (ctx->conn.fd == 0)
 			return NGX_ERROR;
-		size_t ulen = (len - 1) / 2;
+		size_t ulen = (len - 1) / 2, i;
 		u_char *umsg = message + 1;
-		for (size_t i = 0; i < ulen; ++i) {
+		for (i = 0; i < ulen; ++i) {
 			char a = (umsg[i + i] <= '9') ? (umsg[i + i] - '0') : (umsg[i + i] - 'A' + 10);
 			char b = (umsg[i + i + 1] <= '9') ? (umsg[i + i + 1] - '0') : (umsg[i + i + 1] - 'A' + 10);
 			umsg[i] = (a << 4) | b;
