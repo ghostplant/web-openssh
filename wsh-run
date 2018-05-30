@@ -9,7 +9,7 @@ TMP_CONF=/tmp/www.cfg
 
 cd $(dirname "${TMP_CONF}")
 
-awk '{ gsub("%CWD%", "'"${WORKDIR}"'", $0); print $0 }' ${WORKDIR}/www.cfg.in | \
+awk '{ gsub("%CWD%", "'"${WORKDIR}"'", $0); print $0 }' ${WORKDIR}/module/www.cfg.in | \
   awk '{ gsub("%PORT%", "'"${LISTEN:-8080 ssl}"'", $0); print $0 }' > ${TMP_CONF}
 
 LISTEN=$(awk '{ if ($1 == "listen") { print $2 } }' ${TMP_CONF} | head -n 1)

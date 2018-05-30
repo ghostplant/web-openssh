@@ -19,7 +19,7 @@
     <button style="margin-top: 5px; width: 140px" id="term_size">0x0</button><br/>
     <button style="margin-top: 5px; width: 140px;" onclick="window.open(window.address + '/download')">File Download</button><br/>
     <button style="margin-top: 5px; width: 140px;" onclick="window.upload()" id="file_upload">File Upload</button><br/>
-    <button style="margin-top: 5px; width: 140px;" onclick="window.termPaste()">Extern Paste</button><br/>
+    <button style="margin-top: 5px; width: 140px;" onclick="window.termPaste()">Paste UTF-8</button><br/>
   </div>
   <textarea id="clipdata" style="width:50%; z-index:3; resize: none; height:50%; background: white; padding: 5px 5px 5px 5px; opacity:1.0; border:8px solid #28004D; position:absolute; left:25%; top:25%; display: none"></textarea>
   <div id="term_div"></div>
@@ -86,7 +86,7 @@
 
     if (!localStorage.getItem('_address'))
       localStorage.setItem('_address', window.location.host);
-    var address = prompt("Input the location of OpenSSH:", localStorage.getItem('_address'));
+    var address = prompt("Input the source of WebShell service:", localStorage.getItem('_address'));
     if (address)
       localStorage.setItem('_address', address);
 

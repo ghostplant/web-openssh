@@ -70,4 +70,4 @@ firefox "http://localhost:8080/"
 --------------------------------------------------------
 
 If you want to enable http over SSL, change listen ports, or add WWW authorization,
-you can add your custom settings in nginx config file - [www.cfg.in](www.cfg.in). 
+you can add your custom settings in nginx config file - [www.cfg.in](module/www.cfg.in).
