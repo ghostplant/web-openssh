@@ -3,7 +3,7 @@
 - Intro: A kind of Secure Shell Server completely replacing OpenSSH Server, sharing connection message over websocket protocol.
 - Support: HTTPS, Basic AUTH, Docker Integration, WebSocket FileUpload, FileDownload, etc.
 
-![image](webshell.png "Web Shell")
+![image](https://github.com/ghostplant/webshell/raw/images/webshell.png "Web Shell")
 
 --------------------------------------------------------
 
