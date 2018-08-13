@@ -1,6 +1,6 @@
 # Web Shell (License: MIT)
 
-- Intro: A kind of Secure Shell Server completely replacing OpenSSH Server, sharing connection message over websocket protocol.
+- Intro: Linux Secure Shell & WebSFTP over HTTPS, sharing connection message over websocket protocol, able to replace OpenSSH Server completely.
 - Support: HTTPS, Basic AUTH, Docker Integration, WebSocket FileUpload, FileDownload, etc.
 
 ![image](https://github.com/ghostplant/webshell/raw/images/webshell.png "Web Shell")
