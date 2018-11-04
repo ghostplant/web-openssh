@@ -1,9 +1,9 @@
-# Web Shell (License: MIT)
+# Web OpenSSH (License: MIT)
 
 - Intro: Linux Secure Shell & WebSFTP over HTTPS, sharing connection message over websocket protocol, able to replace OpenSSH Server completely.
 - Support: HTTPS, Basic AUTH, Docker Integration, WebSocket FileUpload, FileDownload, etc.
 
-![image](https://github.com/ghostplant/webshell/raw/images/webshell.png "Web Shell")
+![image](https://github.com/ghostplant/web-openssh/raw/images/webshell.png "Web Shell")
 
 --------------------------------------------------------
 
@@ -38,8 +38,8 @@ docker run -it --rm --net=host -e LISTEN="8443 ssl" -e ACCOUNT="admin:badmin" gh
 ```sh
 sudo apt build-dep nginx-core
 
-git clone https://github.com/ghostplant/webshell
-cd webshell/
+git clone https://github.com/ghostplant/web-openssh
+cd web-openssh/
 ./wsh-make_native
 ./wsh-run
 ```
@@ -50,8 +50,8 @@ cd webshell/
 sudo yum install epel-release
 sudo yum install gcc nginx pcre-devel openssl openssl-devel
 
-git clone https://github.com/ghostplant/webshell
-cd webshell/
+git clone https://github.com/ghostplant/web-openssh
+cd web-openssh/
 ./wsh-make_native
 ./wsh-run
 ```
@@ -64,8 +64,8 @@ sudo apt build-dep nginx-core  # for Ubuntu only
 sudo yum install epel-release # for Centos only
 sudo yum install gcc nginx pcre-devel openssl openssl-devel
 
-git clone https://github.com/ghostplant/webshell
-cd webshell/
+git clone https://github.com/ghostplant/web-openssh
+cd web-openssh/
 ./wsh-make_alpine
 docker run -it --rm --net=host -e LISTEN="8080 ssl" ghostplant/webshell
 ```
