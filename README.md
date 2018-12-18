@@ -23,7 +23,7 @@
 
 --------------------------------------------------------
 
-### Run Embeded Web Shell in Docker from Repository
+### Run Embedded Web Shell in Docker from Repository
 
 ```sh
 docker pull ghostplant/webshell
