@@ -26,8 +26,11 @@
 ### Run Embedded Web Shell in Docker from Repository
 
 ```sh
+# Download docker image
 docker pull ghostplant/webshell
+# Run service over HTTPS, no password:
 docker run -it --rm --net=host -e LISTEN="8443 ssl" ghostplant/webshell
+# Run service over HTTPS, with password:
 docker run -it --rm --net=host -e LISTEN="8443 ssl" -e ACCOUNT="admin:badmin" ghostplant/webshell
 ```
 --------------------------------------------------------
