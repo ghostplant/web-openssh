@@ -6,7 +6,7 @@ WORKDIR=$(pwd)
 mkdir -p .build/
 cd .build
 
-if ! cd nginx-*; then
+if ! cd nginx-* >/dev/null 2>&1; then
 	curl -L http://nginx.org/download/nginx-1.10.3.tar.gz > _nginx-1.10.3.tar.gz
 	tar xzvf _nginx-1.10.3.tar.gz && cd nginx-*
 fi
@@ -14,9 +14,12 @@ fi
 
 rm -rf /tmp/http_webshell "${WORKDIR}/bin"
 
-./configure --prefix=/tmp/http_webshell --add-module=../../module \
+if ! ./configure --prefix=/tmp/http_webshell --add-module=../../module \
 	--with-ipv6 --with-file-aio --with-http_ssl_module --with-http_auth_request_module \
-	--with-cc-opt="-Wno-error"
+	--with-cc-opt="-Wno-error"; then
+	echo "Failed to find configure modules for nginx. Did you forget to run 'apt-get build-dep nginx'?"
+	exit 1
+fi
 
 make && make install
 mv /tmp/http_webshell "${WORKDIR}"/bin

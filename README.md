@@ -10,7 +10,7 @@
 *Features of webssh-proxy*:
 
 - UTF-8 Support, Color Terminal, Visual Bell/Beep Sound, ..
-- Local File Uploading to Remote: support HUGE file upload
+- Local File Uploading to Remote: support Large file upload (<= 2GB)
 - Remote File Downloading to Local: support HUGE file download
 - No dependency with OpenSSH Server
 - Fully AsyncIO based

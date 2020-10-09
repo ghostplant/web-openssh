@@ -6,17 +6,20 @@ WORKDIR=$(pwd)
 mkdir -p .build/
 cd .build
 
-if ! cd nginx-*; then
+if ! cd nginx-* >/dev/null 2>&1; then
 	curl -L http://nginx.org/download/nginx-1.10.3.tar.gz > _nginx-1.10.3.tar.gz
 	tar xzvf _nginx-1.10.3.tar.gz && cd nginx-*
 fi
 
 
-./configure --add-dynamic-module=../../module --user=nginx --group=nginx \
+if ! ./configure --add-dynamic-module=../../module --user=nginx --group=nginx \
 	--with-ipv6 --with-file-aio --with-pcre-jit --with-http_dav_module --with-http_ssl_module \
 	--with-http_stub_status_module --with-http_gzip_static_module --with-http_v2_module \
 	--with-http_auth_request_module --with-mail --with-mail_ssl_module \
-	--with-cc-opt="-Wno-error"
+	--with-cc-opt="-Wno-error"; then
+	echo "Failed to find configure modules for nginx. Did you forget to run 'apt-get build-dep nginx'?"
+	exit 1
+fi
 
 make modules 
 
