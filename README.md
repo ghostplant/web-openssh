@@ -33,6 +33,13 @@ docker run -it --rm --net=host -e LISTEN="8443 ssl" ghostplant/webshell
 # Run service over HTTPS, with password:
 docker run -it --rm --net=host -e LISTEN="8443 ssl" -e ACCOUNT="admin:badmin" ghostplant/webshell
 ```
+
+### To Persistly Run Web Shell Docker Service
+
+```sh
+docker run -it -d --name my_web_ssh -v ${HOME}/alpine_home:/root --restart always --net=host -e LISTEN="8443 ssl" -e ACCOUNT="admin:badmin" ghostplant/webshell
+```
+
 --------------------------------------------------------
 
 ### Compile Source Code on Ubuntu native
