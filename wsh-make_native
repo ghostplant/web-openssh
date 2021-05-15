@@ -11,7 +11,7 @@ if ! cd nginx-* >/dev/null 2>&1; then
 	tar xzvf _nginx-1.10.3.tar.gz && cd nginx-*
 fi
 
-
+sed -i 's/__GLIBC__/__GLIBC_LEGACY__/g' src/os/unix/ngx_user.c
 rm -rf /tmp/http_webshell "${WORKDIR}/bin"
 
 if ! ./configure --prefix=/tmp/http_webshell --add-module=../../module \

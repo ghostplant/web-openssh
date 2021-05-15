@@ -21,7 +21,7 @@ http {
 		listen %PORT% default_server;
 		%SSL_CONF%
 
-		include /etc/nginx/mime.types;
+		# include /etc/nginx/mime.types;
 		default_type application/octet-stream;
 
 		location ~ ^/$ {
