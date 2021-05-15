@@ -22,7 +22,7 @@ http {
 		%SSL_CONF%
 
 		include /etc/nginx/mime.types;
-		# default_type text/html;
+		default_type application/octet-stream;
 
 		location ~ ^/$ {
 			default_type text/html;

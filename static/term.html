@@ -16,9 +16,9 @@
 <script src="term.js"></script>
 <body style="margin: 0 0; text-align: left;">
   <div style="position: absolute; z-index: 2; right: 0%; margin-top: 10px; margin-right: 10px; opacity:0.4;">
-    <button style="margin-top: 5px; width: 140px" id="term_size">0x0</button><br/>
+    <button style="margin-top: 5px; width: 140px;" id="term_size">0x0</button><br/>
     <button style="margin-top: 5px; width: 140px;" onclick="window.open(window.address + '/download')">File Download</button><br/>
-    <button style="margin-top: 5px; width: 140px;" onclick="window.upload()" id="file_upload">File Upload</button><br/>
+    <button style="margin-top: 5px; width: 140px; color: red;" onclick="window.upload()" id="file_upload">File Upload</button><br/>
     <button style="margin-top: 5px; width: 140px;" onclick="window.termPaste()">Paste UTF-8</button><br/>
   </div>
   <textarea id="clipdata" style="width:50%; z-index:3; resize: none; height:50%; background: white; padding: 5px 5px 5px 5px; opacity:1.0; border:8px solid #28004D; position:absolute; left:25%; top:25%; display: none"></textarea>
@@ -131,7 +131,7 @@
         };
         ws_uploader.onmessage = function (evt) {
           current = current + 1;
-          var progress = parseInt((current * 100 / counts));
+          var progress = parseInt(((current * 100 + counts - 1) / counts));
           if (progress > 100)
             progress = 100;
           document.getElementById('file_upload').innerHTML = progress + ' %';
