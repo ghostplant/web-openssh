@@ -37,6 +37,7 @@ http {
 		location /download {
 			alias /;
 			autoindex on;
+			charset utf-8;
 		}
 
 		location /upload {
